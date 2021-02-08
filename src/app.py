@@ -26,14 +26,20 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/members', methods=['GET','POST'])
+""" @app.route('/member/<int:id>', methods=['GET'])
+def test_get(id):
+    member = jackson_family.get_member(id)
+    return jsonify(member), 200 """
+
+@app.route('/members', methods=['GET'])
+@app.route('/member', methods=['POST'])
 @app.route('/member/<int:id>', methods=['GET','PUT','DELETE'])
 def familyTree(id = None):
     # this is how you can use the Family datastructure by calling its methods
     if request.method == 'GET':
         if id == None:
             family = jackson_family.get_all_members()
-            return jsonify({"Family":"Jackson"}, family), 200
+            return jsonify(family), 200
         if id:
             member = jackson_family.get_member(id)
             return jsonify(member), 200
@@ -43,6 +49,7 @@ def familyTree(id = None):
             last_name = "Jackson"
             age = request.json.get("age")
             lucky_numbers = request.json.get("lucky_numbers")
+            id = request.json.get("id")
 
             if not first_name:
                 return jsonify({"msg": "first_name is required"}), 400
@@ -54,6 +61,7 @@ def familyTree(id = None):
                 "first_name": first_name,
                 "age": age,
                 "lucky_numbers":lucky_numbers,
+                "id": id
             }
             jackson_family.add_member(member)
             return jsonify({"msg":"Member created successfully"}),200
@@ -87,7 +95,7 @@ def familyTree(id = None):
             return jsonify({"msg": "Member not found"}), 404
         else:
             jackson_family.delete_member(id)
-            return jsonify({"done": "user deleted"}), 200
+            return jsonify({"done": True}), 200
 
 
         
